@@ -7,8 +7,8 @@ namespace DecodeROM
 {
     class Program
     {
-        static byte[] byteOrder;
-        static byte[] addressOrder;
+        static byte[] byteOrder = null;
+        static byte[] addressOrder = null;
 
         static void Main(string[] args)
         {            
@@ -22,25 +22,18 @@ namespace DecodeROM
                 DisplayUsage();
                 return;
             }
-            
-            string fileName = ParseCommandLine(args);
-            Console.WriteLine(fileName);
 
-            if (byteOrder != null)
+  //          try
             {
-                for (int i = 0; i < byteOrder.Length; i++)
-                {
-                    Console.WriteLine(String.Format("Bit {0}: {1}", i, byteOrder[i]));
-                }
-            }
+                string fileName = ParseCommandLine(args);
 
-            if (addressOrder != null)
-            {
-                for (int i = 0; i < addressOrder.Length; i++)
-                {
-                    Console.WriteLine(String.Format("Address {0}: {1}", i, addressOrder[i]));
-                }
+                Decoder d = new Decoder();
+                d.DecodeFile(fileName, addressOrder, byteOrder);
             }
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine("Fatal error: " + e.Message);
+            //}
         }
 
         static string ParseCommandLine(string[] args)
@@ -90,8 +83,7 @@ namespace DecodeROM
                 byteOrder = new byte[dataBits.Length];
                 for (int i = 0; i < dataBits.Length; i++)
                 {
-                    Console.WriteLine("Parsing data bit {0}: {1}", i, dataBits[i]);
-                    byteOrder[i] = byte.Parse(dataBits[0]);
+                    byteOrder[i] = byte.Parse(dataBits[i]);
                 }
             }
             catch (FormatException)
@@ -108,14 +100,13 @@ namespace DecodeROM
                 addressOrder = new byte[addressBits.Length];
                 for (int i = 0; i < addressBits.Length; i++)
                 {
-                    addressOrder[i] = byte.Parse(addressBits[0]);
+                    addressOrder[i] = byte.Parse(addressBits[i]);
                 }
             }
             catch (FormatException)
             {
                 throw new Exception(String.Format("Could not parse address lines: {0}", address));
             }
-
         }
 
         static void DisplayUsage()
